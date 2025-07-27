@@ -24,7 +24,10 @@ jobs:
       - name: ⚙️ Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: 📦 Run Tests (API & UI)
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run Tests with Gradle
         run: ./gradlew clean test
 
       - name: 📁 Upload JUnit Report
