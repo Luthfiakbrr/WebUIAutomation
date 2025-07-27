@@ -6,7 +6,9 @@ import io.cucumber.java.en.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import pages.LoginPage;
+
 
 import static org.junit.Assert.assertTrue;
 
@@ -16,8 +18,14 @@ public class LoginSteps {
 
     @Before
     public void setUp() {
-        WebDriverManager.chromedriver().setup(); // <-- WAJIB ditambahkan
-        driver = new ChromeDriver();
+        WebDriverManager.chromedriver().setup();
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new"); // Gunakan mode headless Chromium terbaru
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        driver = new ChromeDriver(options);
         loginPage = new LoginPage(driver);
     }
 
