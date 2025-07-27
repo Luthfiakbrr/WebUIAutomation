@@ -1,0 +1,49 @@
+name: CI - Automation API & UI Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run API & UI Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'  # Ganti dengan versi Java proyek kamu
+
+      - name: ⚙️ Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: 📦 Run Tests (API & UI)
+        run: ./gradlew clean test
+
+      - name: 📁 Upload JUnit Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: build/test-results/test
+
+      - name: 📊 Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report
+          path: build/reports/tests/test
+
+      - name: 🥒 Upload Cucumber Report (if available)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report
+          path: build/reports/cucumber/  # Ubah sesuai lokasi report kamu
