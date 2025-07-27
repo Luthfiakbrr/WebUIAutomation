@@ -27,6 +27,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: 🧩 Install Google Chrome
+        run: |
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+
       - name: Run Tests with Gradle
         run: ./gradlew clean test
 

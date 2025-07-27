@@ -3,6 +3,7 @@ package stepdefinitions;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.LoginPage;
@@ -15,6 +16,7 @@ public class LoginSteps {
 
     @Before
     public void setUp() {
+        WebDriverManager.chromedriver().setup(); // <-- WAJIB ditambahkan
         driver = new ChromeDriver();
         loginPage = new LoginPage(driver);
     }
