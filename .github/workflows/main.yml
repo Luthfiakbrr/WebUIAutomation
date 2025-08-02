@@ -32,8 +32,8 @@ jobs:
           sudo apt update
           sudo apt install -y google-chrome-stable
 
-      - name: Run Tests with Gradle
-        run: ./gradlew clean test
+      - name: Run Tests
+        run: ./gradlew clean test --info
 
       - name: 📁 Upload JUnit Report
         if: always()
@@ -54,4 +54,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-report
-          path: build/reports/cucumber/  # Ubah sesuai lokasi report kamu
+          path: build/reports/cucumber/
+
+      - name: Upload Allure Report (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: build/allure-report
+

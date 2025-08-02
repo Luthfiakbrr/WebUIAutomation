@@ -25,4 +25,11 @@ public class LoginPage {
     public void clickLogin() {
         driver.findElement(loginButton).click();
     }
+
+    public void clickLoginButton() {
+    }
+
+    public boolean isLoginSuccess() {
+        return false;
+    }
 }
