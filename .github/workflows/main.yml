@@ -12,27 +12,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Java
+      - name: ⚙️ Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Setup Gradle
+      - name: 🚀 Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Make gradlew executable
+      - name: 🧑‍🔧 Make gradlew Executable
         run: chmod +x gradlew
 
-      - name: 🧩 Install Google Chrome
+      - name: 🌐 Install Chrome & ChromeDriver
         run: |
           sudo apt update
           sudo apt install -y google-chrome-stable
+          CHROME_VERSION=$(google-chrome --version | grep -oP "\d+\.\d+\.\d+")
+          wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/linux64/chromedriver-linux64.zip
+          unzip chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
 
-      - name: Run Tests
+      - name: 🧪 Run All Tests
         run: ./gradlew clean test --info
 
       - name: 📁 Upload JUnit Report
@@ -48,18 +53,3 @@ jobs:
         with:
           name: html-report
           path: build/reports/tests/test
-
-      - name: 🥒 Upload Cucumber Report (if available)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cucumber-report
-          path: build/reports/cucumber/
-
-      - name: Upload Allure Report (optional)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: build/allure-report
-
