@@ -1,55 +1,54 @@
-name: CI - Automation API & UI Tests
+name: Run Automation Tests (API & UI Web)
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
 jobs:
   test:
-    name: Run API & UI Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: ⚙️ Setup Java
+      - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '21'
 
-      - name: 🚀 Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
-      - name: 🧑‍🔧 Make gradlew Executable
-        run: chmod +x gradlew
-
-      - name: 🌐 Install Chrome & ChromeDriver
+      - name: Install Chrome
         run: |
           sudo apt update
           sudo apt install -y google-chrome-stable
-          CHROME_VERSION=$(google-chrome --version | grep -oP "\d+\.\d+\.\d+")
-          wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/linux64/chromedriver-linux64.zip
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Install ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP "\d+\.\d+\.\d+\.\d+")
+          CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" \
+            | jq -r '.channels.Stable.version')
+          echo "Using ChromeDriver version: $CHROMEDRIVER_VERSION"
+          wget https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip
           unzip chromedriver-linux64.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
 
-      - name: 🧪 Run All Tests
-        run: ./gradlew clean test --info
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: 📁 Upload JUnit Report
-        if: always()
+      - name: Run Tests (Gradle)
+        run: ./gradlew clean test
+
+      - name: Generate Allure Report
+        run: ./gradlew allureReport
+
+      - name: Upload Allure Report as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: junit-report
-          path: build/test-results/test
-
-      - name: 📊 Upload HTML Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report
-          path: build/reports/tests/test
+          name: allure-report
+          path: build/reports/allure-report
