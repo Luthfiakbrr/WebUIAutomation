@@ -4,29 +4,32 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Clone source code dari repo
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # ✅ Setup Java (pastikan sama seperti di lokal: Java 21)
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '21'
 
+      # ✅ Install Google Chrome untuk Selenium WebDriver
       - name: Install Chrome
         run: |
           sudo apt update
+          sudo apt install -y wget unzip jq
           sudo apt install -y google-chrome-stable
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
+      # ✅ Install ChromeDriver yang cocok dengan Chrome
       - name: Install ChromeDriver
         run: |
           CHROME_VERSION=$(google-chrome --version | grep -oP "\d+\.\d+\.\d+\.\d+")
@@ -38,15 +41,19 @@ jobs:
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
 
+      # ✅ Setup Gradle wrapper cache untuk efisiensi build
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      # ✅ Jalankan tes otomatis (UI + API)
       - name: Run Tests (Gradle)
         run: ./gradlew clean test
 
+      # ✅ Generate Allure Report dari hasil test
       - name: Generate Allure Report
         run: ./gradlew allureReport
 
+      # ✅ Upload Allure Report ke GitHub sebagai Artifact
       - name: Upload Allure Report as Artifact
         uses: actions/upload-artifact@v4
         with:

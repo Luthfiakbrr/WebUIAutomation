@@ -18,30 +18,48 @@ repositories {
 }
 
 dependencies {
-    // ✅ Untuk UI automation dengan Selenium
+    // ✅ Selenium untuk Web UI Automation
     implementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
 
-    // ✅ Untuk WebDriverManager (download ChromeDriver otomatis)
+    // ✅ WebDriverManager
     testImplementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
 
-    // ✅ Untuk API testing dan Cucumber
+    // ✅ REST Assured untuk API testing
     testImplementation 'io.rest-assured:rest-assured:5.3.1'
+
+    // ✅ Cucumber (optional, jika kamu pakai Gherkin)
     testImplementation 'io.cucumber:cucumber-java:7.14.0'
     testImplementation 'io.cucumber:cucumber-junit:7.14.0'
 
-    // ✅ Untuk JUnit 5
+    // ✅ JUnit 5 untuk API testing
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 
-    testImplementation 'org.hamcrest:hamcrest:2.2'
-
+    // ✅ Allure integration
     testImplementation 'io.qameta.allure:allure-rest-assured:2.24.0'
     testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
+    testImplementation 'io.qameta.allure:allure-testng:2.24.0'
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
 
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.12.1'
+    // ✅ Hamcrest (opsional, untuk assert tambahan)
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+
+    // ✅ TestNG untuk Web UI
     testImplementation 'org.testng:testng:7.10.1'
 }
 
 test {
-    useJUnitPlatform()
+    // ✅ Jalankan semua test class (JUnit & TestNG) bersama
+    useTestNG()
+
+    // ✅ Konfigurasi Allure results
+    systemProperty "allure.results.directory", "build/allure-results"
+
+    // ✅ Aktifkan logging
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    // ✅ Generate Allure report otomatis setelah selesai test
+    finalizedBy 'allureReport'
 }

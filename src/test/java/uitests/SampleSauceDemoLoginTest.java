@@ -1,24 +1,27 @@
 package uitests;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import io.qameta.allure.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.annotations.*;
 
-import static org.junit.Assert.assertTrue; // Gunakan JUnit punya ini
+import io.qameta.allure.*;
 
+import static org.testng.Assert.assertTrue;
+
+@Epic("UI Automation")
+@Feature("Login Feature")
 public class SampleSauceDemoLoginTest {
 
-    static WebDriver driver;
+    WebDriver driver;
 
     @BeforeClass
-    public static void setUp() {
+    public void setUp() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new"); // mode headless modern
+        options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
 
@@ -26,7 +29,9 @@ public class SampleSauceDemoLoginTest {
         driver.manage().window().maximize();
     }
 
-    @Test
+    @Test(description = "Valid login on SauceDemo")
+    @Severity(SeverityLevel.CRITICAL)
+    @Story("User can log in successfully")
     public void successfulLoginShouldNavigateToInventoryPage() {
         driver.get("https://www.saucedemo.com/");
         driver.findElement(By.id("user-name")).sendKeys("standard_user");
@@ -34,11 +39,11 @@ public class SampleSauceDemoLoginTest {
         driver.findElement(By.id("login-button")).click();
 
         WebElement inventoryContainer = driver.findElement(By.id("inventory_container"));
-        assertTrue("Inventory page should be visible after login.", inventoryContainer.isDisplayed());
+        assertTrue(inventoryContainer.isDisplayed(), "Inventory page should be visible after login.");
     }
 
     @AfterClass
-    public static void tearDown() {
+    public void tearDown() {
         if (driver != null) {
             driver.quit();
         }
