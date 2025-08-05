@@ -3,6 +3,13 @@ plugins {
     id 'io.qameta.allure' version '2.11.2'
 }
 
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
 allure {
     report {
         version.set("2.24.0")
@@ -13,53 +20,30 @@ allure {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    // ✅ Selenium untuk Web UI Automation
     implementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
-
-    // ✅ WebDriverManager
     testImplementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
-
-    // ✅ REST Assured untuk API testing
     testImplementation 'io.rest-assured:rest-assured:5.3.1'
-
-    // ✅ Cucumber (optional, jika kamu pakai Gherkin)
     testImplementation 'io.cucumber:cucumber-java:7.14.0'
     testImplementation 'io.cucumber:cucumber-junit:7.14.0'
-
-    // ✅ JUnit 5 untuk API testing
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-
-    // ✅ Allure integration
     testImplementation 'io.qameta.allure:allure-rest-assured:2.24.0'
-    testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
-    testImplementation 'io.qameta.allure:allure-testng:2.24.0'
     testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
-
-    // ✅ Hamcrest (opsional, untuk assert tambahan)
     testImplementation 'org.hamcrest:hamcrest:2.2'
-
-    // ✅ TestNG untuk Web UI
-    testImplementation 'org.testng:testng:7.10.1'
 }
 
 test {
-    // ✅ Jalankan semua test class (JUnit & TestNG) bersama
-    useTestNG()
-
-    // ✅ Konfigurasi Allure results
+    useJUnit() // ✅ PENTING: hanya gunakan JUnit
     systemProperty "allure.results.directory", "build/allure-results"
-
-    // ✅ Aktifkan logging
+    systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
     testLogging {
         events "passed", "skipped", "failed"
     }
-
-    // ✅ Generate Allure report otomatis setelah selesai test
     finalizedBy 'allureReport'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ["-Xlint:unchecked", "-Xlint:deprecation"]
+    options.release.set(17) // <== gunakan ini untuk hasil bytecode Java 17
 }
